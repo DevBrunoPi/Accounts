@@ -29,6 +29,7 @@ function Operacao() {
           CriarConta();
           break;
         case "Consultar Saldo":
+          ConsultarSaldo();
           break;
         case "Depositar":
           Deposito();
@@ -125,7 +126,7 @@ function ContaExiste(NomeConta) {
 }
 
 // Adicionar Saldo
- function AddSaldo(NomeConta, QtdDeposito) {
+function AddSaldo(NomeConta, QtdDeposito) {
   const DadosConta = GetConta(NomeConta);
   if (!QtdDeposito) {
     console.log(chalk.red("Digite um Valor!"));
@@ -144,7 +145,7 @@ function ContaExiste(NomeConta) {
     console.log(
       chalk.green(`Foi depositado o valor de R$:${QtdDeposito} na sua conta.`)
     );
-    return Operacao()
+    return Operacao();
   }
 }
 
@@ -154,4 +155,24 @@ function GetConta(NomeConta) {
     flag: "r",
   });
   return JSON.parse(ContaJSON);
+}
+
+//Mostrar o Saldo da conta
+
+function ConsultarSaldo() {
+  inquirer
+    .prompt([{ name: "NomeConta", message: "Qual o nome da sua conta?" }])
+    .then((answer) => {
+      const NomeConta = answer["NomeConta"];
+
+      if (!ContaExiste(NomeConta)) {
+        return ConsultarSaldo();
+      }
+
+      const DadosConta = GetConta(NomeConta);
+
+      console.log("Saldo atual: ", chalk.blue(`R$:${DadosConta.Saldo}`));
+      Operacao();
+    })
+    .catch((err) => console.log(err));
 }
