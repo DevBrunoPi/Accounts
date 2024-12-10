@@ -2,10 +2,11 @@ const inquirer = require("inquirer");
 const chalk = require("chalk");
 
 const fs = require("fs");
-const { json } = require("stream/consumers");
 
+//Inciar a operação
 Operacao();
 
+//Lógica da operação
 function Operacao() {
   inquirer
     .prompt([
@@ -117,6 +118,7 @@ function Deposito() {
     })
     .catch((err) => console.log(err));
 }
+
 // Checar se conta existe
 function ContaExiste(NomeConta) {
   if (!fs.existsSync(`contas/${NomeConta}.json`)) {
@@ -150,6 +152,7 @@ function AddSaldo(NomeConta, QtdDeposito) {
   }
 }
 
+//Puxar dados da conta via JSON
 function GetConta(NomeConta) {
   const ContaJSON = fs.readFileSync(`contas/${NomeConta}.json`, {
     encoding: "utf8",
@@ -159,7 +162,6 @@ function GetConta(NomeConta) {
 }
 
 //Mostrar o Saldo da conta
-
 function ConsultarSaldo() {
   inquirer
     .prompt([{ name: "NomeConta", message: "Qual o nome da sua conta?" }])
@@ -178,6 +180,7 @@ function ConsultarSaldo() {
     .catch((err) => console.log(err));
 }
 
+//Operação de Sacar
 function Sacar() {
   inquirer
     .prompt([
@@ -208,6 +211,7 @@ function Sacar() {
     });
 }
 
+//Remover Saldo da Conta
 function RemoverSaldo(NomeConta, valor) {
   const DadosConta = GetConta(NomeConta);
 
