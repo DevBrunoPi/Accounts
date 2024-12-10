@@ -35,6 +35,7 @@ function Operacao() {
           Deposito();
           break;
         case "Sacar":
+          Sacar();
           break;
         case "Sair":
           console.log(chalk.bgWhite.black("Obrigado por usar o Accounts!"));
@@ -175,4 +176,61 @@ function ConsultarSaldo() {
       Operacao();
     })
     .catch((err) => console.log(err));
+}
+
+function Sacar() {
+  inquirer
+    .prompt([
+      {
+        name: "NomeConta",
+        message: "Qual o nome da sua conta?",
+      },
+    ])
+    .then((answer) => {
+      const NomeConta = answer["NomeConta"];
+
+      if (!ContaExiste(NomeConta)) {
+        return Sacar();
+      }
+
+      inquirer
+        .prompt([
+          {
+            name: "Valor",
+            message: "Qual o valor a ser sacado?",
+          },
+        ])
+        .then((answer) => {
+          const valor = answer["Valor"];
+          RemoverSaldo(NomeConta, valor);
+        })
+        .catch((err) => console.log(err));
+    });
+}
+
+function RemoverSaldo(NomeConta, valor) {
+  const DadosConta = GetConta(NomeConta);
+
+  if (!valor) {
+    console.log(chalk.red("Digite um valor válido!"));
+    return Sacar();
+  }
+
+  if (DadosConta.Saldo < valor) {
+    console.log(chalk.red("Valor indisponivel!"));
+    return Sacar();
+  }
+
+  DadosConta.Saldo = parseFloat(DadosConta.Saldo) - parseFloat(valor);
+
+  fs.writeFileSync(
+    `contas/${NomeConta}.json`,
+    JSON.stringify(DadosConta),
+    function (err) {
+      console.log(err);
+    }
+  );
+
+  console.log(chalk.green("Valor Sacado!"));
+  Operacao();
 }
